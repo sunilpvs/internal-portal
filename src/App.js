@@ -17,6 +17,7 @@ import Contact from "./components/pages/Contact";
 import UnderDevelopment from "./components/pages/drafts/UnderDevelopment";
 import AccessDenied from "./components/pages/accessRequest/AccessDenied";
 import PageNotFound from "./components/pages/errors/PageNotFound";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
@@ -39,7 +40,12 @@ function App() {
         <Route path="/scedp" element={<SCEDP />} />
         <Route path="/contact" element={<Contact />} />
 
-        <Route path="/my-assets" element={<UnderDevelopment />} />
+        <Route
+          path="/my-assets" element={
+            <ProtectedRoute>
+              <UnderDevelopment />
+            </ProtectedRoute>} 
+        />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
