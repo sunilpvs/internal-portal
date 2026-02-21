@@ -35,6 +35,10 @@ jobs:
               env: 
                 REACT_APP_API_BASE_URL: ${{ vars.REACT_APP_API_BASE_URL }}
                 REACT_APP_FAV_ICON: ${{ vars.REACT_APP_FAV_ICON }}
+                REACT_APP_VMS_PORTAL_URL: ${{ vars.REACT_APP_VMS_PORTAL_URL }}
+                REACT_APP_AMS_PORTAL_URL: ${{ vars.REACT_APP_AMS_PORTAL_URL }}
+                REACT_APP_ADMIN_PORTAL_URL: ${{ vars.REACT_APP_ADMIN_PORTAL_URL }}
+                REACT_APP_CMS_PORTAL_URL: ${{ vars.REACT_APP_CMS_PORTAL_URL }}
               run: |
                     echo "Bulding react app with API URL: $REACT_APP_API_BASE_URL"
                     CI=false npm run build
