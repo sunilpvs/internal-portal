@@ -1,0 +1,145 @@
+#  Deploy the vendor portal to cpanel based on environment
+name: Deploy Vendor React app to cpanel
+
+on:
+    push:
+        branches:
+            - main
+            - test
+
+jobs:
+    deploy: 
+        runs-on: ubuntu-latest
+        if: |
+            !contains(github.event.head_commit.message, '[skip deploy]')
+
+        # Set the environment
+        environment: ${{ github.ref_name == 'main' && 'prod' || 'test' }}
+
+        env:
+            REACT_APP_API_BASE_URL: ${{ secrets.REACT_APP_API_BASE_URL }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build React app
+              env: 
+                REACT_APP_API_BASE_URL: ${{ vars.REACT_APP_API_BASE_URL }}
+                REACT_APP_FAV_ICON: ${{ vars.REACT_APP_FAV_ICON }}
+              run: |
+                    echo "Bulding react app with API URL: $REACT_APP_API_BASE_URL"
+                    CI=false npm run build
+
+            - name: Create Deployment marker file
+              run: |
+                        echo "${GITHUB_SHA}" > build/.deploy-marker
+            
+            # Upload in versions folder like versions/version-1, version-2
+            - name: Upload release
+              uses: appleboy/scp-action@v0.1.6
+              with:
+                host: ${{ secrets.CPANEL_HOST }}
+                username: ${{ secrets.CPANEL_USER }}
+                key: ${{ secrets.CPANEL_SSH_KEY }}
+                source: "build/*"
+                target: "/home/${{ secrets.CPANEL_USER }}/${{ secrets.DEPLOY_DIR }}/versions/version-${{ github.run_number }}"
+               
+
+            - name: Check the Deployment marker file
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.CPANEL_HOST }}
+                  username: ${{ secrets.CPANEL_USER }}
+                  key: ${{ secrets.CPANEL_SSH_KEY }}
+                  script: |
+                        DEPLOY_PATH="/home/${{ secrets.CPANEL_USER }}/${{ secrets.DEPLOY_DIR }}/versions/version-${{ github.run_number }}/build"
+                        if [ -f "$DEPLOY_PATH/.deploy-marker" ]; then
+                            echo "Deployment marker file exists in $DEPLOY_PATH"
+                        else
+                            echo "Deployment marker file is missing in $DEPLOY_PATH"
+                            exit 1
+                        fi
+
+            - name: Set the permissions to the deployed files
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.CPANEL_HOST }}
+                  username: ${{ secrets.CPANEL_USER }}
+                  key: ${{ secrets.CPANEL_SSH_KEY }}
+                  script: |
+                        DEPLOY_PATH="/home/${{ secrets.CPANEL_USER }}/${{ secrets.DEPLOY_DIR }}/versions/version-${{ github.run_number }}/build"
+                        chmod -R 755 "$DEPLOY_PATH"
+                        echo "Set permissions to 755 for all files in $DEPLOY_PATH"
+
+            - name: Activate Release and Set Current Symlink and Permissions
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.CPANEL_HOST }}
+                  username: ${{ secrets.CPANEL_USER }}
+                  key: ${{ secrets.CPANEL_SSH_KEY }}
+                  script: |
+                        set -e
+                        cd "/home/${{ secrets.CPANEL_USER }}/${{ secrets.DEPLOY_DIR }}"
+                        if [ ! -d "versions/version-${{ github.run_number }}" ]; then
+                            echo "Versions directory does not exist. Creating it now."
+                            mkdir -p "versions"
+                        fi
+
+                        ln -sfn "versions/version-${{ github.run_number }}/build" current
+                        chmod -R 755 "current"
+                        echo "Activated version-${{ github.run_number }} as the current release."
+
+            - name: Final Deployment Check
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.CPANEL_HOST }}
+                  username: ${{ secrets.CPANEL_USER }}
+                  key: ${{ secrets.CPANEL_SSH_KEY }}
+                  script: |
+                        DEPLOY_PATH="/home/${{ secrets.CPANEL_USER }}/${{ secrets.DEPLOY_DIR }}/current"
+                        MARKER_FILE="$DEPLOY_PATH/.deploy-marker"
+                        if [ -f "$MARKER_FILE" ] && grep -q "${GITHUB_SHA}" "$MARKER_FILE"; then
+                            echo "Deployment successful. Files are present in $DEPLOY_PATH"
+                        else
+                            echo "Deployment Failed. No files found in $DEPLOY_PATH"
+                            exit 1
+                        fi
+
+            - name: Clean up old versions (Keep latest 5)
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                    host: ${{ secrets.CPANEL_HOST }}
+                    username: ${{ secrets.CPANEL_USER }}
+                    key: ${{ secrets.CPANEL_SSH_KEY }}
+                    script: |
+                        set -e
+                        DEPLOY_DIR="/home/${{ secrets.CPANEL_USER }}/${{ secrets.DEPLOY_DIR }}/versions"
+                        cd "$DEPLOY_DIR"
+                        
+                        if [ ! -d "$DEPLOY_DIR" ]; then
+                            echo "No versions directory found. Skipping cleanup."
+                            exit 0
+                        fi
+
+                        if [ "$DEPLOY_DIR" == "/" ] || [ -z "$DEPLOY_DIR" ] ||  [ "$DEPLOY_DIR" == "/home" ] || [ "$DEPLOY_DIR" == "/home/" ]; then
+                            echo "Error: Invalid deployment directory. Aborting cleanup."
+                            exit 1
+                        fi
+
+                        ls -1dt version-* | tail -n +6 | xargs -I {} rm -rf  "{}"
+                        echo "Cleaned up old versions, kept the latest 5 versions."
+
+
+              
+
+            
+                
