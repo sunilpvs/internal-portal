@@ -63,6 +63,19 @@ body {
   font-weight: 500;
 }
 
+.nav-trigger-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.profile-icon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
 .nav-links li {
   padding: 25px 0;
 }

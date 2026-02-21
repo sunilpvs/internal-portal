@@ -14,8 +14,9 @@ import TLS from "./components/pages/TLS";
 import SCPG from "./components/pages/SCPG";
 import SCEDP from "./components/pages/SCEDP";
 import Contact from "./components/pages/Contact";
-import LoginPage from "./components/pages/auth/LoginPage";
+import UnderDevelopment from "./components/pages/drafts/UnderDevelopment";
 import AccessDenied from "./components/pages/accessRequest/AccessDenied";
+import PageNotFound from "./components/pages/errors/PageNotFound";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 
@@ -37,6 +38,9 @@ function App() {
         <Route path="/scpg" element={<SCPG />} />
         <Route path="/scedp" element={<SCEDP />} />
         <Route path="/contact" element={<Contact />} />
+
+        <Route path="/my-assets" element={<UnderDevelopment />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
   );

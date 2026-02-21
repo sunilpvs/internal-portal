@@ -9,9 +9,14 @@ import { logoutUser } from "../services/auth/auth";
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const { userData, isLoading } = useContext(AppContext);
   const apiBaseUrl = `${(process.env.REACT_APP_API_BASE_URL || "").replace(/\/+$/, "")}/`;
   const authURL = `${apiBaseUrl}auth/auth.php`;
+  const vmsPortalUrl = process.env.REACT_APP_VMS_PORTAL_URL;
+  const amsPortalUrl = process.env.REACT_APP_AMS_PORTAL_URL;
+  const adminPortalUrl = process.env.REACT_APP_ADMIN_PORTAL_URL;
+  const cmsPortalUrl = process.env.REACT_APP_CMS_PORTAL_URL;
 
   const handleLogout = async () => {
     await logoutUser();
@@ -21,10 +26,10 @@ function Navbar() {
     <div className="navbar">
       {/* Logo Section */}
       <div className="logo-section">
-  <Link to="/">
-      <img src={logo} alt="logo" className="logo-img" />
-  </Link>
-</div>
+        <Link to="/">
+          <img src={logo} alt="logo" className="logo-img" />
+        </Link>
+      </div>
       {/* Menu */}
       <ul className="nav-links">
         <li><Link to="/about">About Us</Link></li>
@@ -56,36 +61,118 @@ function Navbar() {
         {!isLoading && (
           <>
             {userData ? (
-              <li
-                className="dropdown profile-dropdown"
-                onMouseEnter={() => setProfileOpen(true)}
-                onMouseLeave={() => setProfileOpen(false)}
-                style={{ marginLeft: "auto" }}
-              >
-                <a href="#" style={{ cursor: "pointer" }}>
-                  👤 Profile ▾
-                </a>
-                {profileOpen && (
-                  <ul className="dropdown-menu profile-menu">
-                    <li style={{ padding: "10px 20px 10px 20px", color: "#666" }}>
-                      <a 
-                        href="https://myprofile.microsoft.com/" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ color: "#0b2c5f", textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}
-                      >
-                        <strong>{userData.f_name+" "+userData.l_name || "User"}</strong>
-                        <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
-                      </a>
-                    </li>
-                    <li style={{ borderTop: "1px solid #eee" }}>
-                      <a href="#" onClick={handleLogout} style={{ color: "#0b2c5f", textDecoration: "none", display: "block" }}>
-                        Logout
-                      </a>
-                    </li>
-                  </ul>
-                )}
-              </li>
+              <>
+                <li
+                  className="dropdown"
+                  onMouseEnter={() => setToolsOpen(true)}
+                  onMouseLeave={() => setToolsOpen(false)}
+                  style={{ marginLeft: "auto" }}
+                >
+                  <a href="#" style={{ cursor: "pointer" }} className="nav-trigger-label">
+                    <span>Tools</span>
+                    <span>▾</span>
+                  </a>
+                  {toolsOpen && (
+                    <ul className="dropdown-menu">
+                      {vmsPortalUrl && (
+                        <li>
+                          <a
+                            href={vmsPortalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                          >
+                            <span>VMS Portal</span>
+                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                          </a>
+                        </li>
+                      )}
+                      {amsPortalUrl && (
+                        <li>
+                          <a
+                            href={amsPortalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                          >
+                            <span>AMS Portal</span>
+                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                          </a>
+                        </li>
+                      )}
+                      {adminPortalUrl && (
+                        <li>
+                          <a
+                            href={adminPortalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                          >
+                            <span>Admin Portal</span>
+                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                          </a>
+                        </li>
+                      )}
+                      {cmsPortalUrl && (
+                        <li>
+                          <a
+                            href={cmsPortalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                          >
+                            <span>CMS Portal</span>
+                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                          </a>
+                        </li>
+                      )}
+                    </ul>
+                  )}
+                </li>
+
+                <li
+                  className="dropdown profile-dropdown"
+                  onMouseEnter={() => setProfileOpen(true)}
+                  onMouseLeave={() => setProfileOpen(false)}
+                >
+                  <a href="#" style={{ cursor: "pointer" }} className="nav-trigger-label">
+                    <span className="profile-icon">👤</span>
+                    <span>Profile</span>
+                    <span>▾</span>
+                  </a>
+                  {profileOpen && (
+                    <ul className="dropdown-menu profile-menu">
+
+                      {/* Name with Profile Link */}
+                      <li style={{ padding: "10px 20px 10px 20px", color: "#666" }}>
+                        <a
+                          href="https://myprofile.microsoft.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: "#0b2c5f", textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}
+                        >
+                          <strong>{userData.f_name + " " + userData.l_name || "User"}</strong>
+                          <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                        </a>
+                      </li>
+
+                      {/* My assets */}
+                      <li>
+                        <Link to="/my-assets" style={{ color: "#0b2c5f", textDecoration: "none", display: "block" }}>
+                          My Assets
+                        </Link>
+                      </li>
+
+                      {/* Logout */}
+                      <li style={{ borderTop: "1px solid #eee" }}>
+                        <a href="#" onClick={handleLogout} style={{ color: "#0b2c5f", textDecoration: "none", display: "block" }}>
+                          Logout
+                        </a>
+                      </li>
+                    </ul>
+                  )}
+                </li>
+              </>
             ) : (
               <li style={{ marginLeft: "auto" }}><Link to={authURL} className="login">Login</Link></li>
             )}
