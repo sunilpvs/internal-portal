@@ -8,6 +8,15 @@ const axiosInstance = axios.create({
     withCredentials: true,
 });
 
+const protectedPaths = ["/my-assets"];
+const silentAuthEndpoints = ["api/user/me", "auth/check.php?portal=default"];
+
+const isProtectedPath = (pathname) =>
+    protectedPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+
+const isSilentAuthRequest = (requestUrl = "") =>
+    silentAuthEndpoints.some((endpoint) => requestUrl.includes(endpoint));
+
 const refreshAxios = axios.create({
     baseURL,
     withCredentials: true,
@@ -17,8 +26,9 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+        const pathname = window.location.pathname;
 
-        if (window.location.pathname === "/") {
+        if (pathname === "/") {
             return Promise.reject(error);
         }
 
@@ -30,8 +40,17 @@ axiosInstance.interceptors.response.use(
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
                 console.error("Refresh failed:", refreshError);
-                toast.error("Session expired. Please login again.");
-                window.location.href = "/";
+                const requestUrl = originalRequest?.url || "";
+                const isSilentRequest = isSilentAuthRequest(requestUrl);
+
+                if (!isSilentRequest) {
+                    toast.error("Session expired. Please login again.");
+                }
+
+                if (isProtectedPath(pathname)) {
+                    window.location.href = "/";
+                }
+
                 return Promise.reject(refreshError);
             }
         }
