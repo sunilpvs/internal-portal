@@ -73,17 +73,17 @@ function Navbar() {
                     <span>▾</span>
                   </a>
                   {toolsOpen && (
-                    <ul className="dropdown-menu">
+                    <ul className="dropdown-menu tools-menu">
                       {vmsPortalUrl && (
                         <li>
                           <a
                             href={vmsPortalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                            className="tools-link"
                           >
-                            <span>VMS Portal</span>
-                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                            <span className="tools-label">Vendor Management System(VMS)</span>
+                            <i className="fas fa-arrow-up-right-from-square external-link-icon"></i>
                           </a>
                         </li>
                       )}
@@ -93,10 +93,10 @@ function Navbar() {
                             href={amsPortalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                            className="tools-link"
                           >
-                            <span>AMS Portal</span>
-                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                            <span className="tools-label">Asset Management System(AMS)</span>
+                            <i className="fas fa-arrow-up-right-from-square external-link-icon"></i>
                           </a>
                         </li>
                       )}
@@ -106,10 +106,10 @@ function Navbar() {
                             href={adminPortalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                            className="tools-link"
                           >
-                            <span>Admin Portal</span>
-                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                            <span className="tools-label">Admin Portal</span>
+                            <i className="fas fa-arrow-up-right-from-square external-link-icon"></i>
                           </a>
                         </li>
                       )}
@@ -119,10 +119,10 @@ function Navbar() {
                             href={cmsPortalUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                            className="tools-link"
                           >
-                            <span>CMS Portal</span>
-                            <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                            <span className="tools-label">Rice Module (CMS)</span>
+                            <i className="fas fa-arrow-up-right-from-square external-link-icon"></i>
                           </a>
                         </li>
                       )}
@@ -144,28 +144,28 @@ function Navbar() {
                     <ul className="dropdown-menu profile-menu">
 
                       {/* Name with Profile Link */}
-                      <li style={{ padding: "10px 20px 10px 20px", color: "#666" }}>
+                      <li className="profile-row profile-header-row">
                         <a
                           href="https://myprofile.microsoft.com/"
                           target="_blank"
                           rel="noopener noreferrer"
-                          style={{ color: "#0b2c5f", textDecoration: "none", display: "flex", alignItems: "center", gap: "8px" }}
+                          className="profile-link"
                         >
-                          <strong>{userData.f_name + " " + userData.l_name || "User"}</strong>
-                          <i className="fas fa-arrow-up-right-from-square" style={{ fontSize: "12px" }}></i>
+                          <strong className="profile-link-label">{userData.f_name + " " + userData.l_name || "User"}</strong>
+                          <i className="fas fa-arrow-up-right-from-square external-link-icon"></i>
                         </a>
                       </li>
 
                       {/* My assets */}
-                      <li>
-                        <Link to="/my-assets" style={{ color: "#0b2c5f", textDecoration: "none", display: "block" }}>
+                      <li className="profile-row">
+                        <Link to="/my-assets" target="_blank" className="profile-link">
                           My Assets
                         </Link>
                       </li>
 
                       {/* Logout */}
-                      <li style={{ borderTop: "1px solid #eee" }}>
-                        <a href="#" onClick={handleLogout} style={{ color: "#0b2c5f", textDecoration: "none", display: "block" }}>
+                      <li className="profile-row profile-logout-row">
+                        <a href="#" onClick={handleLogout} className="profile-link">
                           Logout
                         </a>
                       </li>
