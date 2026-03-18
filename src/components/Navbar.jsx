@@ -10,6 +10,7 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [hrOpen, setHrOpen] = useState(false);
   const { userData, isLoading } = useContext(AppContext);
   const apiBaseUrl = `${(process.env.REACT_APP_API_BASE_URL || "").replace(/\/+$/, "")}/`;
   const authURL = `${apiBaseUrl}auth/auth.php`;
@@ -57,6 +58,39 @@ function Navbar() {
         <li><Link to="/awards">Awards</Link></li>
         <li><Link to="/testimonials">Testimonials</Link></li>
         <li><Link to="/contact">Contact</Link></li>
+        {!isLoading && userData && (
+          <li
+            className="dropdown"
+            onMouseEnter={() => setHrOpen(true)}
+            onMouseLeave={() => setHrOpen(false)}
+          >
+            <a href="#" style={{ cursor: "pointer" }} className="nav-trigger-label">
+              <span>Human Resources</span>
+              <span>▾</span>
+            </a>
+            {hrOpen && (
+              <ul className="dropdown-menu tools-menu">
+                <li>
+                  <Link to="/holiday-calendar" target="_blank" className="tools-link">
+                    <span className="tools-label">Holiday Calendar</span>
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="/under-development"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tools-link"
+                  >
+                    <span className="tools-label">Policies</span>
+                    <i className="fas fa-arrow-up-right-from-square external-link-icon"></i>
+                  </a>
+                </li>
+              </ul>
+            )}
+          </li>
+        )}
+
 
         {!isLoading && (
           <>
