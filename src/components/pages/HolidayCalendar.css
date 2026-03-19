@@ -151,6 +151,13 @@
   color: #333;
 }
 
+.holiday-description {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6a7786;
+}
+
 .td-branch {
   text-align: center;
 }

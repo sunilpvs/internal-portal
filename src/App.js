@@ -40,13 +40,19 @@ function App() {
         <Route path="/scpg" element={<SCPG />} />
         <Route path="/scedp" element={<SCEDP />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/holiday-calendar" element={<HolidayCalendar />} />
         <Route path="/under-development" element={<UnderDevelopment />} />
 
         <Route
           path="/my-assets" element={
             <ProtectedRoute>
               <UnderDevelopment />
+            </ProtectedRoute>} 
+        />
+
+        <Route
+          path="/holiday-calendar" element={
+            <ProtectedRoute>
+              <HolidayCalendar />
             </ProtectedRoute>} 
         />
         <Route path="*" element={<PageNotFound />} />
