@@ -35,6 +35,31 @@ const getClosestAvailableMonth = (months, date) => {
   return sortedByDistance[0];
 };
 
+const normalizeBranchNames = (branches) => {
+  if (!Array.isArray(branches)) {
+    return [];
+  }
+
+  const normalized = [];
+
+  branches.forEach((branch) => {
+    const value = String(branch || '').trim();
+    const lowerValue = value.toLowerCase();
+
+    if (
+      lowerValue === 'andhra pradesh and telangana' ||
+      lowerValue === 'andhra pradesh & telangana'
+    ) {
+      normalized.push('Andhra Pradesh', 'Telangana');
+      return;
+    }
+
+    normalized.push(value);
+  });
+
+  return Array.from(new Set(normalized));
+};
+
 function HolidayCalendar() {
   const [allHolidays, setAllHolidays] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +81,7 @@ function HolidayCalendar() {
             id: item?.id ?? `${index}`,
             title: item?.title || 'Holiday',
             date: item?.date,
-            branches: Array.isArray(item?.branches) ? item.branches : [],
+            branches: normalizeBranchNames(item?.branches),
             description: item?.description || ''
           }))
           .filter((item) => !Number.isNaN(new Date(item.date).getTime()));
@@ -120,36 +145,13 @@ function HolidayCalendar() {
       .sort((a, b) => a - b);
   }, [availableMonths, selectedYear]);
 
-  const branchOrder = [
-    'Andhra Pradesh and Telangana',
-    'Tamilnadu',
-    'Maharashtra',
-    'Gujarat',
-    'Delhi'
-  ];
-
   const branches = useMemo(() => {
     const branchSet = new Set();
     allHolidays.forEach((holiday) => {
       holiday.branches.forEach((branch) => branchSet.add(branch));
     });
 
-    return Array.from(branchSet).sort((a, b) => {
-      const indexA = branchOrder.indexOf(a);
-      const indexB = branchOrder.indexOf(b);
-
-      if (indexA !== -1 && indexB !== -1) {
-        return indexA - indexB;
-      }
-      if (indexA !== -1) {
-        return -1;
-      }
-      if (indexB !== -1) {
-        return 1;
-      }
-
-      return a.localeCompare(b);
-    });
+    return Array.from(branchSet).sort((a, b) => a.localeCompare(b));
   }, [allHolidays]);
 
   useEffect(() => {

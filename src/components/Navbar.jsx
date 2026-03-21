@@ -18,6 +18,7 @@ function Navbar() {
   const amsPortalUrl = process.env.REACT_APP_AMS_PORTAL_URL;
   const adminPortalUrl = process.env.REACT_APP_ADMIN_PORTAL_URL;
   const cmsPortalUrl = process.env.REACT_APP_CMS_PORTAL_URL;
+  const policyUrl = process.env.REACT_APP_POLICY_URL;
 
   const handleLogout = async () => {
     await logoutUser();
@@ -77,7 +78,7 @@ function Navbar() {
                 </li>
                 <li>
                   <a
-                    href="/under-development"
+                    href={policyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="tools-link"
