@@ -39,6 +39,7 @@ jobs:
                 REACT_APP_AMS_PORTAL_URL: ${{ vars.REACT_APP_AMS_PORTAL_URL }}
                 REACT_APP_ADMIN_PORTAL_URL: ${{ vars.REACT_APP_ADMIN_PORTAL_URL }}
                 REACT_APP_CMS_PORTAL_URL: ${{ vars.REACT_APP_CMS_PORTAL_URL }}
+                REACT_APP_POLICY_URL: ${{ vars.REACT_APP_POLICY_URL }}
               run: |
                     echo "Bulding react app with API URL: $REACT_APP_API_BASE_URL"
                     CI=false npm run build
