@@ -12,6 +12,7 @@ const getClosestAvailableMonth = (months, date) => {
       year: date.getFullYear()
     };
   }
+  
 
   const todayMonth = date.getMonth() + 1;
   const todayYear = date.getFullYear();
