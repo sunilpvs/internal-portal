@@ -13,7 +13,6 @@ const getClosestAvailableMonth = (months, date) => {
     };
   }
   
-
   const todayMonth = date.getMonth() + 1;
   const todayYear = date.getFullYear();
   const exactMatch = months.find(({ month, year }) => month === todayMonth && year === todayYear);
