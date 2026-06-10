@@ -198,6 +198,13 @@ function Navbar() {
                         </Link>
                       </li>
 
+                      {/* My Licenses */}
+                      <li className="profile-row">
+                        <Link to="/user-licenses" target="_blank" className="profile-link">
+                          My Licenses
+                        </Link>
+                      </li>
+
                       {/* Logout */}
                       <li className="profile-row profile-logout-row">
                         <a href="#" onClick={handleLogout} className="profile-link">

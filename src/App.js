@@ -15,6 +15,7 @@ import SCPG from "./components/pages/SCPG";
 import SCEDP from "./components/pages/SCEDP";
 import Contact from "./components/pages/Contact";
 import HolidayCalendar from "./components/pages/HolidayCalendar";
+import UserLicenses from "./components/pages/userLicenses/UserLicenses";
 import UnderDevelopment from "./components/pages/drafts/UnderDevelopment";
 import AccessDenied from "./components/pages/accessRequest/AccessDenied";
 import PageNotFound from "./components/pages/errors/PageNotFound";
@@ -55,6 +56,14 @@ function App() {
               <HolidayCalendar />
             </ProtectedRoute>} 
         />
+
+        <Route
+          path="/user-licenses" element={
+            <ProtectedRoute>
+              <UserLicenses />
+            </ProtectedRoute>} 
+        />
+
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
