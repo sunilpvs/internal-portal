@@ -5,35 +5,7 @@ import PageHeader from "../PageHeader";
 import { getHolidayCalendarList } from '../../services/sharepoint/holidayCalendarService';
 import './HolidayCalendar.css';
 
-const getClosestAvailableMonth = (months, date) => {
-  if (months.length === 0) {
-    return {
-      month: date.getMonth() + 1,
-      year: date.getFullYear()
-    };
-  }
-  
-  const todayMonth = date.getMonth() + 1;
-  const todayYear = date.getFullYear();
-  const exactMatch = months.find(({ month, year }) => month === todayMonth && year === todayYear);
-
-  if (exactMatch) {
-    return exactMatch;
-  }
-
-  const sortedByDistance = [...months].sort((a, b) => {
-    const distanceA = Math.abs((a.year - todayYear) * 12 + (a.month - todayMonth));
-    const distanceB = Math.abs((b.year - todayYear) * 12 + (b.month - todayMonth));
-
-    if (distanceA !== distanceB) {
-      return distanceA - distanceB;
-    }
-
-    return (b.year * 12 + b.month) - (a.year * 12 + a.month);
-  });
-
-  return sortedByDistance[0];
-};
+const ALL_MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 
 const normalizeBranchNames = (branches) => {
   if (!Array.isArray(branches)) {
@@ -125,25 +97,14 @@ function HolidayCalendar() {
       });
   }, [allHolidays]);
 
-  const todaySelection = useMemo(
-    () => getClosestAvailableMonth(availableMonths, new Date()),
-    [availableMonths]
-  );
-  const [selectedMonth, setSelectedMonth] = useState(todaySelection.month);
-  const [selectedYear, setSelectedYear] = useState(todaySelection.year);
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
 
   const years = useMemo(() => {
     const uniqueYears = new Set();
     availableMonths.forEach(({ year }) => uniqueYears.add(year));
     return Array.from(uniqueYears).sort((a, b) => b - a);
   }, [availableMonths]);
-
-  const monthsForSelectedYear = useMemo(() => {
-    return availableMonths
-      .filter(({ year }) => year === selectedYear)
-      .map(({ month }) => month)
-      .sort((a, b) => a - b);
-  }, [availableMonths, selectedYear]);
 
   const branches = useMemo(() => {
     const branchSet = new Set();
@@ -153,17 +114,6 @@ function HolidayCalendar() {
 
     return Array.from(branchSet).sort((a, b) => a.localeCompare(b));
   }, [allHolidays]);
-
-  useEffect(() => {
-    setSelectedMonth(todaySelection.month);
-    setSelectedYear(todaySelection.year);
-  }, [todaySelection.month, todaySelection.year]);
-
-  useEffect(() => {
-    if (monthsForSelectedYear.length > 0 && !monthsForSelectedYear.includes(selectedMonth)) {
-      setSelectedMonth(monthsForSelectedYear[0]);
-    }
-  }, [monthsForSelectedYear, selectedMonth]);
 
   const holidaysData = useMemo(() => {
     return allHolidays
@@ -203,12 +153,8 @@ function HolidayCalendar() {
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
               className="filter-select"
-              disabled={monthsForSelectedYear.length === 0}
             >
-              {monthsForSelectedYear.length === 0 && (
-                <option value="">No months</option>
-              )}
-              {monthsForSelectedYear.map((monthNumber) => (
+              {ALL_MONTHS.map((monthNumber) => (
                 <option key={monthNumber} value={monthNumber}>
                   {monthNames[monthNumber - 1]}
                 </option>
@@ -279,7 +225,7 @@ function HolidayCalendar() {
             </table>
           ) : (
             <div className="no-holidays-message">
-              No holidays found for {monthNames[selectedMonth - 1] || 'selected month'} {selectedYear}
+              No holidays this month
             </div>
           )}
         </div>
